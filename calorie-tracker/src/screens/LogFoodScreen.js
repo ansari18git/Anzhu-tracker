@@ -10,6 +10,7 @@ import MealPresetButton from '../components/MealPresetButton';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import { MEAL_TYPES, MEAL_TYPE_LABELS, SPACING, BORDER_RADIUS } from '../utils/constants';
+import { ActivityIndicator } from 'react-native';
 
 export default function LogFoodScreen({ navigation, route }) {
   const initialType = route?.params?.mealType ?? 'breakfast';

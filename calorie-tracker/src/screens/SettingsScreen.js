@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Alert } from 'react-native';
-import { Text, TextInput, Button, Divider } from 'react-native-paper';
+import { Text, TextInput, Button, Divider, Snackbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useProfile } from '../hooks/useProfile';
 import { useAuth } from '../context/AuthContext';
@@ -21,6 +21,7 @@ export default function SettingsScreen() {
   const [targetWeight, setTargetWeight] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '' });
 
   useEffect(() => {
     if (profile) {
@@ -46,9 +47,10 @@ export default function SettingsScreen() {
         target_weight: targetWeight ? parseFloat(targetWeight) : null,
       });
       setSaved(true);
+      setSnackbar({ visible: true, message: '✓ Settings saved!' });
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
-      Alert.alert('Error', 'Failed to save settings. Please try again.');
+      setSnackbar({ visible: true, message: 'Failed to save. Try again.' });
     } finally {
       setSaving(false);
     }
@@ -165,6 +167,15 @@ export default function SettingsScreen() {
         </View>
 
       </ScrollView>
+
+      <Snackbar
+        visible={snackbar.visible}
+        onDismiss={() => setSnackbar({ visible: false, message: '' })}
+        duration={2000}
+        style={styles.snackbar}
+      >
+        {snackbar.message}
+      </Snackbar>
     </SafeAreaView>
   );
 }
@@ -227,4 +238,5 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.button,
   },
   aboutText: { ...typography.body2, color: colors.textSecondary, marginBottom: SPACING.xs },
+  snackbar: { backgroundColor: colors.textPrimary },
 });
