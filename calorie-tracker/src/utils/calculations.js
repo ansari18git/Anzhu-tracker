@@ -16,21 +16,23 @@ export const calcTotalMacros = (foodLogs) => {
   return foodLogs.reduce(
     (totals, log) => ({
       calories: totals.calories + (log.calories || 0),
-      protein: totals.protein + (log.protein || 0),
-      carbs: totals.carbs + (log.carbs || 0),
-      fat: totals.fat + (log.fat || 0),
+      protein:  totals.protein  + (log.protein  || 0),
+      carbs:    totals.carbs    + (log.carbs    || 0),
+      fat:      totals.fat      + (log.fat      || 0),
+      fiber:    totals.fiber    + (log.fiber    || 0),
     }),
-    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+    { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
   );
 };
 
-export const calcMacroPercents = (protein, carbs, fat) => {
-  const total = protein + carbs + fat;
-  if (total === 0) return { protein: 0, carbs: 0, fat: 0 };
+export const calcMacroPercents = (protein, carbs, fat, fiber = 0) => {
+  const total = protein + carbs + fat + fiber;
+  if (total === 0) return { protein: 0, carbs: 0, fat: 0, fiber: 0 };
   return {
     protein: Math.round((protein / total) * 100),
-    carbs: Math.round((carbs / total) * 100),
-    fat: Math.round((fat / total) * 100),
+    carbs:   Math.round((carbs   / total) * 100),
+    fat:     Math.round((fat     / total) * 100),
+    fiber:   Math.round((fiber   / total) * 100),
   };
 };
 

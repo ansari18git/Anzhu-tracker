@@ -23,6 +23,7 @@ export default function LogFoodScreen({ navigation, route }) {
   const [protein, setProtein] = useState('');
   const [carbs, setCarbs] = useState('');
   const [fat, setFat] = useState('');
+  const [fiber, setFiber] = useState('');
   const [saveAsPreset, setSaveAsPreset] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -58,6 +59,7 @@ export default function LogFoodScreen({ navigation, route }) {
     setProtein('');
     setCarbs('');
     setFat('');
+    setFiber('');
   };
 
   const handleMeasureChange = (newMeasure) => {
@@ -68,6 +70,7 @@ export default function LogFoodScreen({ navigation, route }) {
     setProtein('');
     setCarbs('');
     setFat('');
+    setFiber('');
   };
 
   const handleQuantityChange = (val) => {
@@ -88,6 +91,7 @@ export default function LogFoodScreen({ navigation, route }) {
       setProtein(String(result.protein));
       setCarbs(String(result.carbs));
       setFat(String(result.fat));
+      setFiber(String(result.fiber));
     }
   };
 
@@ -105,8 +109,9 @@ export default function LogFoodScreen({ navigation, route }) {
     setMealName(item.meal_name);
     setCalories(String(item.calories));
     setProtein(item.protein ? String(item.protein) : '');
-    setCarbs(item.carbs ? String(item.carbs) : '');
-    setFat(item.fat ? String(item.fat) : '');
+    setCarbs(item.carbs   ? String(item.carbs)   : '');
+    setFat(item.fat       ? String(item.fat)     : '');
+    setFiber(item.fiber   ? String(item.fiber)   : '');
     if (item.meal_type) setMealType(item.meal_type);
   };
 
@@ -127,9 +132,10 @@ export default function LogFoodScreen({ navigation, route }) {
         meal_name: mealName.trim(),
         meal_type: mealType,
         calories: parseInt(calories, 10),
-        protein: parseFloat(protein) || 0,
-        carbs: parseFloat(carbs) || 0,
-        fat: parseFloat(fat) || 0,
+        protein:  parseFloat(protein) || 0,
+        carbs:    parseFloat(carbs)   || 0,
+        fat:      parseFloat(fat)     || 0,
+        fiber:    parseFloat(fiber)   || 0,
       }, saveAsPreset);
       navigation.goBack();
     } catch (e) {
@@ -274,9 +280,10 @@ export default function LogFoodScreen({ navigation, route }) {
                     </View>
                   </View>
                   <View style={styles.nutritionDivider} />
-                  <NutritionRow label="Protein" value={nutrition.protein} />
-                  <NutritionRow label="Carbs" value={nutrition.carbs} />
-                  <NutritionRow label="Fat" value={nutrition.fat} />
+                  <NutritionRow label="Protein" value={nutrition.protein} color={colors.secondary} />
+                  <NutritionRow label="Carbs"   value={nutrition.carbs}   color={colors.accent} />
+                  <NutritionRow label="Fat"     value={nutrition.fat}     color={colors.warning} />
+                  <NutritionRow label="Fiber"   value={nutrition.fiber}   color={colors.success} />
                 </View>
               )}
             </View>
@@ -335,6 +342,7 @@ export default function LogFoodScreen({ navigation, route }) {
             <TextInput label="Protein" value={protein} onChangeText={setProtein} keyboardType="numeric" mode="outlined" style={styles.macroInput} outlineColor={colors.border} activeOutlineColor={colors.secondary} right={<TextInput.Affix text="g" />} />
             <TextInput label="Carbs"   value={carbs}   onChangeText={setCarbs}   keyboardType="numeric" mode="outlined" style={styles.macroInput} outlineColor={colors.border} activeOutlineColor={colors.accent}    right={<TextInput.Affix text="g" />} />
             <TextInput label="Fat"     value={fat}     onChangeText={setFat}     keyboardType="numeric" mode="outlined" style={styles.macroInput} outlineColor={colors.border} activeOutlineColor={colors.warning}   right={<TextInput.Affix text="g" />} />
+            <TextInput label="Fiber"   value={fiber}   onChangeText={setFiber}   keyboardType="numeric" mode="outlined" style={styles.macroInput} outlineColor={colors.border} activeOutlineColor={colors.success}   right={<TextInput.Affix text="g" />} />
           </View>
 
           {/* Save as preset */}
@@ -388,10 +396,13 @@ export default function LogFoodScreen({ navigation, route }) {
   );
 }
 
-function NutritionRow({ label, value }) {
+function NutritionRow({ label, value, color }) {
   return (
     <View style={styles.nutritionRow}>
-      <Text style={styles.nutritionRowLabel}>{label}</Text>
+      <View style={styles.nutritionRowLeft}>
+        {color && <View style={[styles.nutritionDot, { backgroundColor: color }]} />}
+        <Text style={styles.nutritionRowLabel}>{label}</Text>
+      </View>
       <Text style={styles.nutritionRowValue}>{value} g</Text>
     </View>
   );
@@ -450,7 +461,9 @@ const styles = StyleSheet.create({
   netWtBadge: { backgroundColor: colors.surface, borderRadius: 6, paddingHorizontal: SPACING.sm, paddingVertical: 4 },
   netWtText: { ...typography.caption, color: colors.textSecondary },
   nutritionDivider: { height: 1, backgroundColor: colors.divider, marginBottom: SPACING.sm },
-  nutritionRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
+  nutritionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 4 },
+  nutritionRowLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  nutritionDot: { width: 8, height: 8, borderRadius: 4 },
   nutritionRowLabel: { ...typography.body2, color: colors.textSecondary },
   nutritionRowValue: { ...typography.body2, color: colors.textPrimary, fontWeight: '600' },
 

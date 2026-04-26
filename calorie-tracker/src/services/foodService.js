@@ -20,7 +20,7 @@ export const getTodayLogs = async (userId) => {
 export const getRecentMeals = async (userId) => {
   const { data, error } = await supabase
     .from('food_logs')
-    .select('meal_name, meal_type, calories, protein, carbs, fat')
+    .select('meal_name, meal_type, calories, protein, carbs, fat, fiber')
     .eq('user_id', userId)
     .order('logged_at', { ascending: false })
     .limit(30);
@@ -43,8 +43,9 @@ export const addFoodLog = async (userId, log) => {
       meal_type: log.meal_type,
       calories: log.calories,
       protein: log.protein || 0,
-      carbs: log.carbs || 0,
-      fat: log.fat || 0,
+      carbs:   log.carbs   || 0,
+      fat:     log.fat     || 0,
+      fiber:   log.fiber   || 0,
     })
     .select()
     .single();

@@ -12,8 +12,9 @@ export default function MealCard({ meal, onDelete }) {
         <Text style={styles.name} numberOfLines={1}>{meal.meal_name}</Text>
         <View style={styles.macros}>
           {meal.protein > 0 && <Text style={styles.macro}>P {Math.round(meal.protein)}g</Text>}
-          {meal.carbs > 0 && <Text style={styles.macro}>C {Math.round(meal.carbs)}g</Text>}
-          {meal.fat > 0 && <Text style={styles.macro}>F {Math.round(meal.fat)}g</Text>}
+          {meal.carbs   > 0 && <Text style={styles.macro}>C {Math.round(meal.carbs)}g</Text>}
+          {meal.fat     > 0 && <Text style={styles.macro}>F {Math.round(meal.fat)}g</Text>}
+          {meal.fiber   > 0 && <Text style={[styles.macro, styles.fiber]}>Fi {Math.round(meal.fiber * 10) / 10}g</Text>}
         </View>
       </View>
       <View style={styles.right}>
@@ -57,6 +58,9 @@ const styles = StyleSheet.create({
   macro: {
     ...typography.caption,
     color: colors.textSecondary,
+  },
+  fiber: {
+    color: colors.success,
   },
   right: {
     alignItems: 'flex-end',
