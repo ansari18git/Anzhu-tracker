@@ -4,7 +4,7 @@ import { getTodayWater, upsertWater } from '../services/waterService';
 
 export const useWater = () => {
   const { user } = useAuth();
-  const [glasses, setGlasses] = useState(0);
+  const [amountMl, setAmountMl] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const fetchWater = useCallback(async () => {
@@ -12,7 +12,7 @@ export const useWater = () => {
     setLoading(true);
     try {
       const data = await getTodayWater(user.id);
-      setGlasses(data?.glasses ?? 0);
+      setAmountMl(data?.glasses ?? 0);
     } catch (err) {
       console.error('useWater fetch error:', err.message);
     } finally {
@@ -24,19 +24,19 @@ export const useWater = () => {
     fetchWater();
   }, [fetchWater]);
 
-  const setWater = useCallback(async (newCount) => {
-    if (!user || newCount < 0) return;
-    setGlasses(newCount);
+  const setWater = useCallback(async (newAmountMl) => {
+    if (!user || newAmountMl < 0) return;
+    setAmountMl(newAmountMl);
     try {
-      await upsertWater(user.id, newCount);
+      await upsertWater(user.id, newAmountMl);
     } catch (err) {
       console.error('useWater upsert error:', err.message);
       fetchWater();
     }
   }, [user, fetchWater]);
 
-  const addGlass = useCallback(() => setWater(glasses + 1), [glasses, setWater]);
-  const removeGlass = useCallback(() => setWater(Math.max(0, glasses - 1)), [glasses, setWater]);
+  const addWater = useCallback((ml) => setWater(amountMl + ml), [amountMl, setWater]);
+  const removeWater = useCallback((ml) => setWater(Math.max(0, amountMl - ml)), [amountMl, setWater]);
 
-  return { glasses, loading, addGlass, removeGlass, refetch: fetchWater };
+  return { amountMl, loading, addWater, removeWater, refetch: fetchWater };
 };

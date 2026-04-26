@@ -12,7 +12,7 @@ export const DEFAULT_GOALS = {
   protein: 150,
   carbs: 200,
   fat: 67,
-  water: 8,
+  water: 2500,
 };
 
 export const SPACING = {

@@ -21,7 +21,7 @@ import { typography } from '../theme/typography';
 
 export default function HomeScreen({ navigation }) {
   const { todayLogs, loading: foodLoading, removeLog, refetch: refetchFood } = useFood();
-  const { glasses, addGlass, removeGlass, refetch: refetchWater } = useWater();
+  const { amountMl, addWater, removeWater, refetch: refetchWater } = useWater();
   const { latestWeight, logWeight, weightLogs, refetch: refetchWeight } = useWeight();
   const { profile, loading: profileLoading } = useProfile();
 
@@ -37,7 +37,7 @@ export default function HomeScreen({ navigation }) {
   const prevWeight = weightLogs.length > 1 ? weightLogs[weightLogs.length - 2]?.weight : null;
   const delta = calcWeightDelta(latestWeight?.weight, prevWeight);
   const calorieGoal = profile?.daily_calorie_goal ?? 2000;
-  const waterGoal = profile?.daily_water_goal ?? 8;
+  const waterGoalMl = profile?.daily_water_goal ?? 2500;
 
   const showToast = (message) => setSnackbar({ visible: true, message });
 
@@ -118,7 +118,11 @@ export default function HomeScreen({ navigation }) {
         {/* Meals by type */}
         {MEAL_TYPES.map((type) => (
           <View key={type} style={styles.mealSection}>
-            <View style={styles.mealHeader}>
+            <TouchableOpacity
+              style={styles.mealHeader}
+              onPress={() => navigation.navigate('LogFood', { mealType: type })}
+              activeOpacity={0.7}
+            >
               <Text style={styles.mealType}>{MEAL_TYPE_LABELS[type]}</Text>
               <View style={styles.mealHeaderRight}>
                 {logsByType[type].length > 0 && (
@@ -126,14 +130,11 @@ export default function HomeScreen({ navigation }) {
                     {logsByType[type].reduce((s, l) => s + l.calories, 0)} cal
                   </Text>
                 )}
-                <TouchableOpacity
-                  style={styles.addButton}
-                  onPress={() => navigation.navigate('LogFood', { mealType: type })}
-                >
+                <View style={styles.addButton}>
                   <Text style={styles.addButtonText}>+ Add</Text>
-                </TouchableOpacity>
+                </View>
               </View>
-            </View>
+            </TouchableOpacity>
             {logsByType[type].length === 0 ? (
               <Text style={styles.emptyMeal}>Nothing logged yet</Text>
             ) : (
@@ -147,7 +148,12 @@ export default function HomeScreen({ navigation }) {
         {/* Water Tracker */}
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>💧 Water</Text>
-          <WaterTracker glasses={glasses} goal={waterGoal} onAdd={addGlass} onRemove={removeGlass} />
+          <WaterTracker
+            amountMl={amountMl}
+            goalMl={waterGoalMl}
+            onAdd={addWater}
+            onRemove={removeWater}
+          />
         </View>
 
         {/* Weight */}

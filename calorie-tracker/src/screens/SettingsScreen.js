@@ -29,7 +29,7 @@ export default function SettingsScreen() {
       setProtein(String(profile.daily_protein_goal ?? 150));
       setCarbs(String(profile.daily_carbs_goal ?? 200));
       setFat(String(profile.daily_fat_goal ?? 67));
-      setWater(String(profile.daily_water_goal ?? 8));
+      setWater(String(profile.daily_water_goal ?? 2500));
       setTargetWeight(profile.target_weight ? String(profile.target_weight) : '');
     }
   }, [profile]);
@@ -43,7 +43,7 @@ export default function SettingsScreen() {
         daily_protein_goal: parseInt(protein) || 150,
         daily_carbs_goal: parseInt(carbs) || 200,
         daily_fat_goal: parseInt(fat) || 67,
-        daily_water_goal: parseInt(water) || 8,
+        daily_water_goal: parseInt(water) || 2500,
         target_weight: targetWeight ? parseFloat(targetWeight) : null,
       });
       setSaved(true);
@@ -115,7 +115,7 @@ export default function SettingsScreen() {
             label="Water"
             value={water}
             onChangeText={setWater}
-            suffix="glasses/day"
+            suffix="ml/day"
           />
         </View>
 
