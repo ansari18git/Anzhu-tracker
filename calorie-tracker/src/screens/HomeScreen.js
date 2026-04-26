@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View, ScrollView, StyleSheet, TouchableOpacity,
   RefreshControl, Modal, ActivityIndicator,
@@ -23,7 +24,13 @@ export default function HomeScreen({ navigation }) {
   const { todayLogs, loading: foodLoading, removeLog, refetch: refetchFood } = useFood();
   const { amountMl, addWater, removeWater, refetch: refetchWater } = useWater();
   const { latestWeight, logWeight, weightLogs, refetch: refetchWeight } = useWeight();
-  const { profile, loading: profileLoading } = useProfile();
+  const { profile, loading: profileLoading, refetch: refetchProfile } = useProfile();
+
+  useFocusEffect(
+    useCallback(() => {
+      refetchProfile();
+    }, [refetchProfile])
+  );
 
   const [refreshing, setRefreshing] = useState(false);
   const [weightModal, setWeightModal] = useState(false);
