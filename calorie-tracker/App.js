@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { PaperProvider, MD3DarkTheme } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
@@ -27,13 +27,15 @@ const paperTheme = {
 };
 
 const navTheme = {
+  ...DefaultTheme,
   dark: true,
   colors: {
-    primary:    colors.primary,
-    background: colors.background,
-    card:       colors.surface,
-    text:       colors.textPrimary,
-    border:     colors.border,
+    ...DefaultTheme.colors,
+    primary:      colors.primary,
+    background:   colors.background,
+    card:         colors.surface,
+    text:         colors.textPrimary,
+    border:       colors.border,
     notification: colors.error,
   },
 };
