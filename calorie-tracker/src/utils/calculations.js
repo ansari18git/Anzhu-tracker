@@ -1,3 +1,23 @@
+export const calcBMI = (weightKg, heightCm) => {
+  if (!weightKg || !heightCm || heightCm === 0) return null;
+  const heightM = heightCm / 100;
+  return Math.round((weightKg / (heightM * heightM)) * 10) / 10;
+};
+
+export const getBMICategory = (bmi) => {
+  if (!bmi) return null;
+  if (bmi < 18.5) return { label: 'Underweight', color: '#2196F3' };
+  if (bmi < 25)   return { label: 'Normal',      color: '#4CAF50' };
+  if (bmi < 30)   return { label: 'Overweight',  color: '#FF9800' };
+  return           { label: 'Obese',             color: '#EF5350' };
+};
+
+export const calcBMIProgress = (bmi) => {
+  // Visual scale: 15 to 35
+  if (!bmi) return 0;
+  return Math.min(1, Math.max(0, (bmi - 15) / 20));
+};
+
 export const calcProgress = (consumed, goal) => {
   if (goal === 0) return 0;
   return Math.min(1, consumed / goal);

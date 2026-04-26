@@ -13,7 +13,7 @@ import { useFood } from '../hooks/useFood';
 import { useWater } from '../hooks/useWater';
 import { useWeight } from '../hooks/useWeight';
 import { useProfile } from '../hooks/useProfile';
-import { calcTotalMacros, calcWeightDelta } from '../utils/calculations';
+import { calcTotalMacros, calcWeightDelta, calcBMI, getBMICategory, calcBMIProgress } from '../utils/calculations';
 import { formatDate } from '../utils/dateHelpers';
 import { MEAL_TYPES, MEAL_TYPE_LABELS, SPACING, BORDER_RADIUS } from '../utils/constants';
 import { colors } from '../theme/colors';
@@ -36,8 +36,15 @@ export default function HomeScreen({ navigation }) {
   const totals = calcTotalMacros(todayLogs);
   const prevWeight = weightLogs.length > 1 ? weightLogs[weightLogs.length - 2]?.weight : null;
   const delta = calcWeightDelta(latestWeight?.weight, prevWeight);
-  const calorieGoal = profile?.daily_calorie_goal ?? 2000;
-  const waterGoalMl = profile?.daily_water_goal ?? 2500;
+  const calorieGoal  = profile?.daily_calorie_goal ?? 2000;
+  const waterGoalMl  = profile?.daily_water_goal   ?? 2500;
+  const heightCm     = profile?.height_cm           ?? null;
+  const targetWeight = profile?.target_weight       ?? null;
+
+  const currentBMI   = calcBMI(latestWeight?.weight, heightCm);
+  const targetBMI    = calcBMI(targetWeight, heightCm);
+  const bmiCategory  = getBMICategory(currentBMI);
+  const bmiProgress  = calcBMIProgress(currentBMI);
 
   const showToast = (message) => setSnackbar({ visible: true, message });
 
@@ -159,26 +166,94 @@ export default function HomeScreen({ navigation }) {
         {/* Weight */}
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>⚖️ Weight</Text>
-          {latestWeight ? (
-            <View style={styles.weightRow}>
-              <Text style={styles.weightValue}>{latestWeight.weight} kg</Text>
-              {delta !== null && (
-                <Text style={[styles.weightDelta, delta > 0 ? styles.deltaUp : styles.deltaDown]}>
-                  {delta > 0 ? `↑ ${delta}` : `↓ ${Math.abs(delta)}`} kg
-                </Text>
+
+          {/* Current Weight + Buttons */}
+          <View style={styles.weightCurrentRow}>
+            <View>
+              <Text style={styles.weightLabel}>Current Weight</Text>
+              {latestWeight ? (
+                <View style={styles.weightValueRow}>
+                  <Text style={styles.weightValue}>{latestWeight.weight} kg</Text>
+                  {delta !== null && (
+                    <Text style={[styles.weightDelta, delta > 0 ? styles.deltaUp : styles.deltaDown]}>
+                      {delta > 0 ? `↑${delta}` : `↓${Math.abs(delta)}`} kg
+                    </Text>
+                  )}
+                </View>
+              ) : (
+                <Text style={styles.emptyMeal}>Not logged yet</Text>
               )}
             </View>
+            <View style={styles.weightButtons}>
+              {/* Camera button — OCR Phase 2 */}
+              <TouchableOpacity
+                style={styles.cameraBtn}
+                onPress={() => showToast('📷 OCR scanning coming soon!')}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.cameraBtnIcon}>📷</Text>
+              </TouchableOpacity>
+              {/* Manual add */}
+              <TouchableOpacity
+                style={styles.weightAddBtn}
+                onPress={() => setWeightModal(true)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.weightAddBtnText}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* BMI */}
+          {heightCm ? (
+            <View style={styles.bmiSection}>
+              <View style={styles.bmiTopRow}>
+                <Text style={styles.bmiLabel}>BMI</Text>
+                {currentBMI && (
+                  <View style={styles.bmiValueRow}>
+                    <Text style={[styles.bmiValue, { color: bmiCategory?.color }]}>
+                      {currentBMI}
+                    </Text>
+                    <Text style={[styles.bmiCategory, { color: bmiCategory?.color }]}>
+                      {bmiCategory?.label}
+                    </Text>
+                  </View>
+                )}
+              </View>
+              <View style={styles.bmiBarBg}>
+                <View style={[
+                  styles.bmiBarFill,
+                  { width: `${bmiProgress * 100}%`, backgroundColor: bmiCategory?.color ?? colors.primary }
+                ]} />
+              </View>
+              <View style={styles.bmiScaleLabels}>
+                <Text style={styles.bmiScaleText}>Underweight</Text>
+                <Text style={styles.bmiScaleText}>Normal</Text>
+                <Text style={styles.bmiScaleText}>Obese</Text>
+              </View>
+            </View>
           ) : (
-            <Text style={styles.emptyMeal}>No weight logged yet</Text>
+            <Text style={styles.bmiHint}>⚙️ Set your height in Settings to see BMI</Text>
           )}
-          <Button
-            mode="outlined"
-            onPress={() => setWeightModal(true)}
-            style={styles.logWeightBtn}
-            textColor={colors.primary}
-          >
-            Log Weight
-          </Button>
+
+          {/* Target Weight + Hero BMI */}
+          <View style={styles.targetSection}>
+            <View style={styles.targetRow}>
+              <Text style={styles.targetLabel}>Target Weight</Text>
+              <Text style={styles.targetValue}>
+                {targetWeight ? `${targetWeight} kg` : '— kg'}
+              </Text>
+            </View>
+            {targetBMI && (
+              <View style={styles.targetRow}>
+                <Text style={styles.targetLabel}>Hero BMI</Text>
+                <Text style={[styles.targetValue, { color: getBMICategory(targetBMI)?.color }]}>
+                  {targetBMI}
+                </Text>
+              </View>
+            )}
+            <Text style={styles.settingsHint}>⚙️ Change target weight in Settings</Text>
+          </View>
         </View>
       </ScrollView>
 
@@ -257,12 +332,47 @@ const styles = StyleSheet.create({
   addButton: { backgroundColor: colors.primary, paddingHorizontal: SPACING.sm, paddingVertical: 4, borderRadius: BORDER_RADIUS.button },
   addButtonText: { ...typography.caption, color: '#fff', fontWeight: '600' },
   emptyMeal: { ...typography.body2, color: colors.textDisabled, fontStyle: 'italic', paddingVertical: SPACING.sm },
-  weightRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, marginBottom: SPACING.sm },
-  weightValue: { ...typography.h2, color: colors.textPrimary },
-  weightDelta: { ...typography.body1, fontWeight: '600' },
+  // Weight section
+  weightCurrentRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.md },
+  weightLabel: { ...typography.caption, color: colors.textSecondary, marginBottom: 2 },
+  weightValueRow: { flexDirection: 'row', alignItems: 'baseline', gap: SPACING.sm },
+  weightValue: { ...typography.h2, color: colors.textPrimary, fontWeight: '700' },
+  weightDelta: { ...typography.body2, fontWeight: '600' },
   deltaDown: { color: colors.primary },
   deltaUp: { color: colors.error },
-  logWeightBtn: { borderColor: colors.primary, borderRadius: BORDER_RADIUS.button },
+  weightButtons: { flexDirection: 'row', gap: SPACING.sm, alignItems: 'center' },
+  cameraBtn: {
+    width: 52, height: 52,
+    borderRadius: BORDER_RADIUS.card,
+    backgroundColor: colors.textPrimary,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  cameraBtnIcon: { fontSize: 24 },
+  weightAddBtn: {
+    paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.button,
+    borderWidth: 1, borderColor: colors.primary,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  weightAddBtnText: { ...typography.body2, color: colors.primary, fontWeight: '600' },
+  // BMI
+  bmiSection: { marginBottom: SPACING.md, gap: SPACING.xs },
+  bmiTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  bmiLabel: { ...typography.body2, color: colors.textSecondary },
+  bmiValueRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
+  bmiValue: { ...typography.h3, fontWeight: '700' },
+  bmiCategory: { ...typography.caption, fontWeight: '600' },
+  bmiBarBg: { height: 10, backgroundColor: colors.divider, borderRadius: 5, overflow: 'hidden' },
+  bmiBarFill: { height: '100%', borderRadius: 5 },
+  bmiScaleLabels: { flexDirection: 'row', justifyContent: 'space-between' },
+  bmiScaleText: { ...typography.caption, color: colors.textDisabled, fontSize: 9 },
+  bmiHint: { ...typography.caption, color: colors.textSecondary, marginBottom: SPACING.sm },
+  // Target
+  targetSection: { borderTopWidth: 1, borderTopColor: colors.divider, paddingTop: SPACING.sm, gap: 4 },
+  targetRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 2 },
+  targetLabel: { ...typography.body2, color: colors.textSecondary },
+  targetValue: { ...typography.body2, color: colors.textPrimary, fontWeight: '600' },
+  settingsHint: { ...typography.caption, color: colors.textDisabled, marginTop: SPACING.xs },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center' },
   modalCard: { backgroundColor: colors.background, borderRadius: BORDER_RADIUS.card, padding: SPACING.lg, width: '85%', gap: SPACING.sm },
   modalTitle: { ...typography.h3, color: colors.textPrimary },

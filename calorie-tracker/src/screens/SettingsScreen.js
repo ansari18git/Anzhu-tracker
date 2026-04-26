@@ -19,6 +19,7 @@ export default function SettingsScreen() {
   const [fat, setFat] = useState('');
   const [water, setWater] = useState('');
   const [targetWeight, setTargetWeight] = useState('');
+  const [height, setHeight] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [snackbar, setSnackbar] = useState({ visible: false, message: '' });
@@ -31,6 +32,7 @@ export default function SettingsScreen() {
       setFat(String(profile.daily_fat_goal ?? 67));
       setWater(String(profile.daily_water_goal ?? 2500));
       setTargetWeight(profile.target_weight ? String(profile.target_weight) : '');
+      setHeight(profile.height_cm ? String(profile.height_cm) : '');
     }
   }, [profile]);
 
@@ -45,6 +47,7 @@ export default function SettingsScreen() {
         daily_fat_goal: parseInt(fat) || 67,
         daily_water_goal: parseInt(water) || 2500,
         target_weight: targetWeight ? parseFloat(targetWeight) : null,
+        height_cm: height ? parseInt(height) : null,
       });
       setSaved(true);
       setSnackbar({ visible: true, message: '✓ Settings saved!' });
@@ -116,6 +119,18 @@ export default function SettingsScreen() {
             value={water}
             onChangeText={setWater}
             suffix="ml/day"
+          />
+        </View>
+
+        {/* Body Info */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Body Info</Text>
+          <Text style={styles.hintText}>Used to calculate your BMI automatically.</Text>
+          <GoalInput
+            label="Height"
+            value={height}
+            onChangeText={setHeight}
+            suffix="cm"
           />
         </View>
 
@@ -215,6 +230,12 @@ const styles = StyleSheet.create({
     ...typography.h3,
     color: colors.textPrimary,
     marginBottom: SPACING.md,
+  },
+  hintText: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginBottom: SPACING.sm,
+    marginTop: -SPACING.xs,
   },
   goalRow: {
     flexDirection: 'row',
