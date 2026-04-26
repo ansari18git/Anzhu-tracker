@@ -1,6 +1,6 @@
 # 🍎 Calorie & Macro Tracker App - Project Specification
 
-> **Last Updated:** April 25, 2026  
+> **Last Updated:** April 26, 2026  
 > **Project Type:** Weekend Mobile App (React Native)  
 > **Purpose:** Simple, minimalist calorie, macro, water, and weight tracking app  
 > **Inspiration:** MyFitnessPal UI (simplified and improved)
@@ -408,6 +408,13 @@ calorie-tracker/
 - Logout
 
 ### Optional Features (Can Add/Remove Later)
+
+#### Added Post-MVP (April 26, 2026):
+- [x] **Local Food Database** — ~250 Indian + common foods with calories/macros per unit
+  - Search-as-you-type in LogFoodScreen
+  - Enter quantity (grams/pieces) → auto-calculates totals
+  - Covers: breakfast, rice/grains, dal/legumes, vegetables (raw), proteins (raw/boiled/grilled), eggs, fish, dairy, fruits, nuts, Indian gravies
+  - File: `src/utils/foodDatabase.js`
 
 #### Phase 2 Enhancements:
 - [ ] Photo logging (progress photos)
