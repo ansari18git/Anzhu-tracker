@@ -1,18 +1,18 @@
 export const colors = {
-  primary: '#4CAF50',
-  secondary: '#2196F3',
-  accent: '#FF9800',
-  success: '#66BB6A',
-  warning: '#FFA726',
-  error: '#EF5350',
+  primary:      '#00D4D8',   // Cyan — matches Anzhu logo
+  secondary:    '#2196F3',   // Blue — water / protein
+  accent:       '#FF9800',   // Orange — energy
+  success:      '#4CAF50',   // Green — goals reached
+  warning:      '#FFA726',   // Amber — overweight range
+  error:        '#EF5350',   // Red — over goal / obese
 
-  background: '#FFFFFF',
-  surface: '#F5F5F5',
+  background:   '#FFFFFF',
+  surface:      '#F0FAFA',   // Subtle cyan tint on cards
 
-  textPrimary: '#212121',
-  textSecondary: '#757575',
-  textDisabled: '#BDBDBD',
+  textPrimary:  '#0D1F2D',   // Dark navy
+  textSecondary:'#4A6572',
+  textDisabled: '#B0BEC5',
 
-  border: '#E0E0E0',
-  divider: '#EEEEEE',
+  border:       '#B2EBF2',   // Light cyan
+  divider:      '#E0F7FA',   // Very light cyan
 };
