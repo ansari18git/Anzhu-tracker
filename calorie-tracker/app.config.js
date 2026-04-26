@@ -23,6 +23,7 @@ export default {
     extra: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+      ocrApiKey: process.env.OCR_API_KEY,
     },
   },
 };
